@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,22 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'nombre-del-proyecto';
+
+  constructor(private router: Router) {}
+
+  isHeroFormRouteActive(): boolean {
+    return this.router.url === '/hero-form';
+  }
+
+  isHeroListRouteActive(): boolean {
+    return this.router.url === '/hero-list';
+  }
+
 }
+
+
+
+
+
+
+

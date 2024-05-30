@@ -4,9 +4,10 @@ import { HeroFormComponent } from './hero/hero-form/hero-form.component';
 import { HeroListComponent } from './hero/hero-list/hero-list.component';
 
 const routes: Routes = [
-  { path: 'heroes', component: HeroListComponent },
+  { path: 'hero-list', component: HeroListComponent },
   { path: 'hero-form', component: HeroFormComponent },
-  { path: '', redirectTo: '/heroes', pathMatch: 'full' }
+  { path: '', redirectTo: '/hero-list', pathMatch: 'full' },
+  { path: '**', redirectTo: '/hero-list' }
 ];
 
 @NgModule({

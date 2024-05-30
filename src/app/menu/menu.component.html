@@ -1,0 +1,30 @@
+<div class="container-fluid p-0">
+    <div class="row w-100 m-0 container-titel">
+        <div class="col-12 text-center titel">
+            <h2>Blog of super hero</h2>
+            <h6>Dan Florea Costin</h6>
+        </div>
+       
+    </div>
+    <div class="row w-100 m-0 ">
+        <div class="col-12 text-end select-language" *ngIf="showButton">
+            <button type="button" (click)="toggleMenu()" mat-stroked-button>
+                <mat-icon svgIcon="MENU" aria-hidden="false"></mat-icon>
+            </button>
+        </div>
+        <div class="col-12 p-0" *ngIf="!showButton || showMenu">
+            <div class="menu w-100">
+                <ng-container *ngFor="let item of navItems">
+                    <mat-list class="w-100">
+                        <mat-list-item class="list-item d-flex align-items-center " [routerLink]="item.routerLink">
+                            <mat-icon svgIcon="{{ item.icon }}" aria-hidden="false"></mat-icon>
+                            <span class="list-item-text ms-2">{{ item.label}}</span>
+                        </mat-list-item>
+                    </mat-list>
+                </ng-container>
+            </div>
+        </div>
+       
+    </div>
+
+</div>
