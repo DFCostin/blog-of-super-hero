@@ -6,6 +6,7 @@ import { HeroListComponent } from './hero/hero-list/hero-list.component';
 const routes: Routes = [
   { path: 'hero-list', component: HeroListComponent },
   { path: 'hero-form', component: HeroFormComponent },
+  { path: 'hero-form/:id', component: HeroFormComponent },
   { path: '', redirectTo: '/hero-list', pathMatch: 'full' },
   { path: '**', redirectTo: '/hero-list' }
 ];
