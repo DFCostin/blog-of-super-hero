@@ -6,3 +6,4 @@ Commits ->
     4 -> Implement the functions of component Hero List 
     5 -> Implement the functions of component Hero From
     6 -> Correct functions and implements
+    7 -> Correct functions and install dependeces of Angular Material

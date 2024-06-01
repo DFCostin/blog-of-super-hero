@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HeroService } from '../hero.service';
 import { Hero } from '../hero.interface';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-hero-list',
@@ -20,7 +21,8 @@ import { Hero } from '../hero.interface';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatButtonModule
   ],
   templateUrl: './hero-list.component.html',
   styleUrls: ['./hero-list.component.css']
@@ -74,7 +76,7 @@ export class HeroListComponent implements OnInit {
     this.isLoading = true;
     this.heroService.getHeroes().subscribe(
       data => {
-        const heroes = data.results.map((hero: any) => ({
+        const heroes = data.map((hero: any) => ({
           id: hero.id,
           name: hero.name.charAt(0).toUpperCase() + hero.name.slice(1).toLowerCase(),
           gender: hero.appearance.gender,
@@ -104,8 +106,7 @@ export class HeroListComponent implements OnInit {
     const confirmDelete = confirm(`Are you sure to delete: ${hero.name}?`);
     if (confirmDelete) {
       this.heroService.deleteHero(hero.id);
-      alert(`${hero.name} was deleted`);
-      window.location.reload();
+      this.loadHeroes();
     }
   }
 
@@ -128,6 +129,7 @@ export class HeroListComponent implements OnInit {
 
   clearDate(): void {
     this.heroService.clearLocalStorage();
+    this.dataSource.filter = '';
     this.loadHeroes();
   }
 }

@@ -59,7 +59,7 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
                     <td mat-cell *matCellDef="let row">
-                      <button mat-raised-button [ngStyle]="{'background-color': 'aqua'}"  (click)="editHero(row)">Modify</button>
+                      <button mat-raised-button [ngStyle]="{'background-color': 'aqua','margin-right' : '3%'}"  (click)="editHero(row)">Modify</button>
                       <button mat-raised-button [ngStyle]="{'background-color': 'rgb(226, 226, 128)'}" (click)="deleteHero(row)">Delete</button> </td>
                 </ng-container>
 

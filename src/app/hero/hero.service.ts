@@ -14,8 +14,9 @@ export class HeroService {
 
   constructor(private http: HttpClient) { }
 
-  getHeroes(): Observable<any> {
+  getHeroes(): Observable<Hero[]> {
     return this.http.get<any>(this.apiUrl).pipe(
+      map(response => response.results as Hero[]),
       catchError(this.handleError)
     );
   }
@@ -38,10 +39,32 @@ export class HeroService {
   clearLocalStorage() {
     localStorage.removeItem('heroes');
     this.heroes = [];
-    this.heroesSubject.next(this.heroes);
+    this.getHeroes().subscribe(
+      heroes => {
+        const formattedHeroes = heroes.map((hero: any) => ({
+          id: hero.id,
+          name: hero.name.charAt(0).toUpperCase() + hero.name.slice(1).toLowerCase(),
+          gender: hero.appearance.gender,
+          race: hero.appearance.race,
+          alignment: hero.biography.alignment,
+          publisher: hero.biography.publisher,
+          img: hero.image.url
+        }));
+        this.heroes = formattedHeroes;
+        this.saveHeroesToLocalStorage();
+        this.heroesSubject.next(this.heroes);
+      },
+      error => {
+        console.error('Failed to fetch heroes:', error);
+      }
+    );
   }
 
   updateHero(updatedHero: Hero): void {
+    if (!Array.isArray(this.heroes)) {
+      this.heroes = [];
+    }
+
     const index = this.heroes.findIndex(hero => hero.id === updatedHero.id);
     if (index !== -1) {
       this.heroes[index] = updatedHero;
@@ -56,6 +79,10 @@ export class HeroService {
     this.heroes = this.heroes.filter(hero => hero.id !== heroId);
     this.saveHeroesToLocalStorage();
     this.heroesSubject.next(this.heroes);
+  }
+
+  getHeroesObservable(): Observable<Hero[]> {
+    return this.heroesSubject.asObservable();
   }
 
   private saveHeroesToLocalStorage() {
