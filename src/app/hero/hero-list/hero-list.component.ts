@@ -4,12 +4,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
-import { HeroService } from '../hero.service';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HeroService } from '../hero.service';
+import { Hero } from '../hero.interface';
 
 @Component({
   selector: 'app-hero-list',
@@ -24,16 +23,14 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatProgressSpinnerModule
   ],
   templateUrl: './hero-list.component.html',
-  styleUrl: './hero-list.component.css'
+  styleUrls: ['./hero-list.component.css']
 })
-
 export class HeroListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  public heroes: any[] = [];
-  public heroesOriginal: any[] = [];
+  public dataSource: MatTableDataSource<Hero> = new MatTableDataSource();
   public displayedColumns: string[] = ['id', 'name', 'gender', 'race', 'alignment', 'publisher', 'img', 'actions'];
   public pageSizeOptions: number[] = [];
   public isLoading = true;
@@ -41,46 +38,53 @@ export class HeroListComponent implements OnInit {
   constructor(private router: Router, private route: ActivatedRoute, private heroService: HeroService) { }
 
   ngOnInit(): void {
-    this.getSuperheroes();
+    this.loadHeroes();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-  
-    if (filterValue === '') {
-      this.heroes = [...this.heroesOriginal];
+  loadHeroes(): void {
+    const storedHeroes = localStorage.getItem('heroes');
+    if (storedHeroes) {
+      const heroes = JSON.parse(storedHeroes).map((hero: Hero) => ({
+        ...hero,
+        name: hero.name.charAt(0).toUpperCase() + hero.name.slice(1).toLowerCase()
+      }));
+      this.setHeroesData(heroes);
     } else {
-      this.heroes = this.heroesOriginal.filter(hero => 
-        Object.values(hero).some(value => 
-          (typeof value === 'string' || typeof value === 'number') && 
-          value.toString().toLowerCase().includes(filterValue)
-        )
-      );
-    }
-  
-    if (this.paginator) {
-      this.paginator.firstPage();
+      this.getSuperheroes();
     }
   }
-  
+
+  setHeroesData(heroes: Hero[]): void {
+    this.dataSource.data = heroes;
+    const totalHeroes = heroes.length;
+    this.pageSizeOptions = this.calculatePageSizeOptions(totalHeroes);
+    this.isLoading = false;
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
   getSuperheroes(): void {
-    this.isLoading = true; 
+    this.isLoading = true;
     this.heroService.getHeroes().subscribe(
       data => {
-        this.heroesOriginal = data.results;
-        this.heroes = this.heroesOriginal.filter(hero => hero.name.toLowerCase())
-          .map(hero => {
-            return {
-              ...hero,
-              name: hero.name.charAt(0).toUpperCase() + hero.name.slice(1)
-            };
-          });
-
-        const totalHeroes = this.heroesOriginal.length;
-
-        this.pageSizeOptions = this.calculatePageSizeOptions(totalHeroes);
-        this.isLoading = false;
-        console.log(this.heroes);
+        const heroes = data.results.map((hero: any) => ({
+          id: hero.id,
+          name: hero.name.charAt(0).toUpperCase() + hero.name.slice(1).toLowerCase(),
+          gender: hero.appearance.gender,
+          race: hero.appearance.race,
+          alignment: hero.biography.alignment,
+          publisher: hero.biography.publisher,
+          img: hero.image.url
+        }));
+        this.setHeroesData(heroes);
+        localStorage.setItem('heroes', JSON.stringify(heroes));
       },
       error => {
         this.isLoading = false;
@@ -95,21 +99,35 @@ export class HeroListComponent implements OnInit {
     return defaultPageSizeOptions.filter(option => option <= maxPageSize);
   }
 
-  deleteHero(hero: any): void {
+  deleteHero(hero: Hero): void {
     const respuesta = confirm(`Are you sure to delete: ${hero.name} ?`);
     if (respuesta) {
-      this.heroes = this.heroes.filter(h => h.id !== hero.id);
-      this.heroesOriginal = this.heroesOriginal.filter(h => h.id !== hero.id);
-      alert(` ${hero.name} was delete`);
+      const updatedHeroes = this.dataSource.data.filter(h => h.id !== hero.id);
+      this.setHeroesData(updatedHeroes);
+      localStorage.setItem('heroes', JSON.stringify(updatedHeroes));
+      alert(`${hero.name} was deleted`);
     }
   }
 
-  editHero(hero: any): void {
-    this.router.navigate(['../hero-form', hero.id], { relativeTo: this.route });
+  editHero(hero: Hero): void {
+    const dataHero = {
+      id: hero.id,
+      name: encodeURIComponent(hero.name),
+      gender: encodeURIComponent(hero.gender),
+      race: encodeURIComponent(hero.race),
+      alignment: encodeURIComponent(hero.alignment),
+      publisher: encodeURIComponent(hero.publisher),
+      img: encodeURIComponent(hero.img)
+    };
+    this.router.navigate(['../hero-form', dataHero], { relativeTo: this.route });
   }
 
   createHero(): void {
     this.router.navigate(['../hero-form'], { relativeTo: this.route });
   }
 
+  clearDate(): void {
+    this.heroService.clearLocalStorage();
+    this.loadHeroes();
+  }
 }

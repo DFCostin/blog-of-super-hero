@@ -1,1 +1,51 @@
-<p>hero-form works!</p>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 header-container text-center">
+             <h3>{{ receiveData ? 'HERE YOU CAN MODIFICATE DATA OF: '+ editHero?.name  : 'HERE YOU CAN CREATE A NEW SUPER HERO' }}</h3> 
+        </div>
+    </div>
+    <div class="row">
+
+        <form [formGroup]="heroForm" (ngSubmit)="onSubmit()" class="form-container">
+            <div class="input-row">
+              <mat-form-field class="input-item">
+                <input matInput placeholder="ID" formControlName="id">
+              </mat-form-field>
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Name" formControlName="name">
+                <mat-error *ngIf="heroForm.get('name')?.errors?.['required']">Name is required</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-row">
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Gender" formControlName="gender">
+                <mat-error *ngIf="heroForm.get('gender')?.errors?.['required']">Gender is required</mat-error>
+              </mat-form-field>
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Race" formControlName="race">
+                <mat-error *ngIf="heroForm.get('race')?.errors?.['required']">Race is required</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-row">
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Alignment" formControlName="alignment">
+                <mat-error *ngIf="heroForm.get('alignment')?.errors?.['required']">Alignment is required</mat-error>
+              </mat-form-field>
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Publisher" formControlName="publisher">
+                <mat-error *ngIf="heroForm.get('publisher')?.errors?.['required']">Publisher is required</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-row">
+              <mat-form-field class="input-item">
+                <input matInput placeholder="Image URL" formControlName="img">
+                <mat-error *ngIf="heroForm.get('img')?.errors?.['required']">Image URL is required</mat-error>
+              </mat-form-field>
+            </div>
+          
+            <button *ngIf="receiveData" mat-raised-button color="primary" type="submit" (click)="updateHero()">Update hero</button>
+            <button *ngIf="!receiveData" mat-raised-button color="primary" type="submit" (click)="createHero()">Create hero</button>
+
+          </form>
+    </div>
+</div>
