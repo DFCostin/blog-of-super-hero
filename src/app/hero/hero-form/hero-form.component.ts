@@ -72,19 +72,27 @@ export class HeroFormComponent implements OnInit {
     }
 
   onSubmit() {
-    if (!this.heroForm.valid) {
+    if (this.heroForm.valid) {
+      if (this.receiveData) {
+        this.updateHero();
+      } else {
+        this.createHero();
+      }
+    } else {
+      alert('An error occurred, check the data.');
       console.error('Invalid form. Check the fields.', this.heroForm.value);
     }
   }
 
   createHero(){
     if (this.heroForm.valid) {
-      const newHero = { ...this.heroForm.value, id: this.heroForm.get('id')?.value };
+      const newHero = { ...this.heroForm.value, id: this.heroForm.get('id')?.value.toString() };
       this.heroService.addHero(newHero);
       const respuesta = confirm(`The hero :  ${ this.heroForm.get('name')?.value}  was created :)`);
       this.heroForm.reset();
       this.obtainLastIdHero();
     } else {
+      alert('An error occurred, check the data.');
       console.error('Invalid form. Check the fields.');
     }
   }
@@ -96,6 +104,7 @@ export class HeroFormComponent implements OnInit {
       const respuesta = confirm(`The hero :  ${ this.heroForm.get('name')?.value}  was update :)`);
       this.router.navigate(['/hero-list']);
     } else {
+      alert('An error occurred, check the data.');
       console.error('Invalid form. Check the fields.');
     }
 

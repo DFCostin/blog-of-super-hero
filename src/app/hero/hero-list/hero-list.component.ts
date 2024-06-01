@@ -88,7 +88,8 @@ export class HeroListComponent implements OnInit {
       },
       error => {
         this.isLoading = false;
-        console.error('Error al obtener los héroes:', error);
+        alert('Error getting heroes.');
+        console.error('Error getting heroes:', error);
       }
     );
   }
@@ -100,12 +101,11 @@ export class HeroListComponent implements OnInit {
   }
 
   deleteHero(hero: Hero): void {
-    const respuesta = confirm(`Are you sure to delete: ${hero.name} ?`);
-    if (respuesta) {
-      const updatedHeroes = this.dataSource.data.filter(h => h.id !== hero.id);
-      this.setHeroesData(updatedHeroes);
-      localStorage.setItem('heroes', JSON.stringify(updatedHeroes));
+    const confirmDelete = confirm(`Are you sure to delete: ${hero.name}?`);
+    if (confirmDelete) {
+      this.heroService.deleteHero(hero.id);
       alert(`${hero.name} was deleted`);
+      window.location.reload();
     }
   }
 

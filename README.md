@@ -5,3 +5,4 @@ Commits ->
     3 -> Prepare the component Hero List and enrout with the api
     4 -> Implement the functions of component Hero List 
     5 -> Implement the functions of component Hero From
+    6 -> Correct functions and implements

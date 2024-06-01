@@ -43,9 +43,7 @@
               </mat-form-field>
             </div>
           
-            <button *ngIf="receiveData" mat-raised-button color="primary" type="submit" (click)="updateHero()">Update hero</button>
-            <button *ngIf="!receiveData" mat-raised-button color="primary" type="submit" (click)="createHero()">Create hero</button>
-
+            <button mat-raised-button color="primary" type="submit">{{ receiveData ? 'Update hero'  : 'Create hero' }}</button>
           </form>
     </div>
 </div>

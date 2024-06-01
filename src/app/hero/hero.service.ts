@@ -23,17 +23,16 @@ export class HeroService {
   obtainLastId(): Observable<number> {
     const heroes = this.loadHeroesFromLocalStorage();
     const ultimoID = heroes.reduce((maxID: number, hero: Hero) => {
-      const heroID = hero.id;
+      const heroID = +hero.id;
       return heroID > maxID ? heroID : maxID;
     }, 0);
     return of(ultimoID);
   }
 
   addHero(hero: Hero) {
-    const heroesWithIds = this.loadHeroesFromLocalStorage();
-    heroesWithIds.push(hero);
-    localStorage.setItem('heroes', JSON.stringify(heroesWithIds));
-    this.heroesSubject.next(heroesWithIds);
+    this.heroes.push(hero);
+    this.saveHeroesToLocalStorage();
+    this.heroesSubject.next(this.heroes);
   }
 
   clearLocalStorage() {
@@ -43,15 +42,20 @@ export class HeroService {
   }
 
   updateHero(updatedHero: Hero): void {
-    const updatedHeroes = this.heroes.map(hero => {
-      if (hero.id === updatedHero.id) {
-        return updatedHero;
-      } else {
-        return hero;
-      }
-    });
-    this.heroes = updatedHeroes;
-    localStorage.setItem('heroes', JSON.stringify(updatedHeroes));
+    const index = this.heroes.findIndex(hero => hero.id === updatedHero.id);
+    if (index !== -1) {
+      this.heroes[index] = updatedHero;
+      this.saveHeroesToLocalStorage();
+      this.heroesSubject.next(this.heroes);
+    } else {
+      console.error(`Hero with id ${updatedHero.id} not found.`);
+    }
+  }
+
+  deleteHero(heroId: number): void {
+    this.heroes = this.heroes.filter(hero => hero.id !== heroId);
+    this.saveHeroesToLocalStorage();
+    this.heroesSubject.next(this.heroes);
   }
 
   private saveHeroesToLocalStorage() {
