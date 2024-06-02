@@ -7,9 +7,9 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 import { HeroService } from '../hero.service';
 import { Hero } from '../hero.interface';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-hero-list',
@@ -73,8 +73,10 @@ export class HeroListComponent implements OnInit {
   }
 
   getSuperheroes(): void {
-    this.isLoading = true;
-    this.heroService.getHeroes().subscribe(
+  this.isLoading = true;
+  const heroes$ = this.heroService.getHeroes();
+  if (heroes$) {
+    heroes$.subscribe(
       data => {
         const heroes = data.map((hero: any) => ({
           id: hero.id,
@@ -94,7 +96,13 @@ export class HeroListComponent implements OnInit {
         console.error('Error getting heroes:', error);
       }
     );
+  } else {
+    this.isLoading = false;
+    alert('Error: Observable from getHeroes() is undefined.');
+    console.error('Error: Observable from getHeroes() is undefined.');
   }
+}
+
 
   calculatePageSizeOptions(totalItems: number): number[] {
     const defaultPageSizeOptions = [5, 10, 25, 100];

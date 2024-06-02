@@ -86,7 +86,7 @@ export class HeroFormComponent implements OnInit {
 
   createHero(){
     if (this.heroForm.valid) {
-      const newHero = { ...this.heroForm.value, id: this.heroForm.get('id')?.value.toString() };
+      const newHero = { ...this.heroForm.value, id: this.heroForm.get('id')?.value };
       this.heroService.addHero(newHero);
       const respuesta = confirm(`The hero :  ${ this.heroForm.get('name')?.value}  was created :)`);
       this.heroForm.reset();
