@@ -64,8 +64,9 @@ export class HeroService {
     if (!Array.isArray(this.heroes)) {
       this.heroes = [];
     }
-
-    const index = this.heroes.findIndex(hero => hero.id === updatedHero.id);
+  
+    const updatedHeroId = Number(updatedHero.id);
+    const index = this.heroes.findIndex(hero => Number(hero.id) === updatedHeroId); 
     if (index !== -1) {
       this.heroes[index] = updatedHero;
       this.saveHeroesToLocalStorage();
